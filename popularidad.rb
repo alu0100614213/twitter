@@ -1,19 +1,16 @@
-
 require 'twitter'
 require './configure'
 
-name = String.new ARGV[0]
+name = ARGV[0]
+num = (ARGV[1] || 4).to_i
 
 user = Hash.new
 
-# Iterate friends, hash their followers
-friends = Twitter.friend_ids(name)
+friends = Twitter.friend_ids(name).ids[0..num]
 
-friends.ids.each do |fid|
+friends.each  do |id|
 
-  f = Twitter.user(fid)
-
-  # Only iterate if we can see their followers
+  f = Twitter.user(id)
   if (f.protected.to_s != "true")
     user[f.screen_name.to_s] = f.followers_count
   end
@@ -21,3 +18,4 @@ friends.ids.each do |fid|
 end
 
 user.sort_by {|k,v| -v}.each { |user, count| puts "#{user}, #{count}" }
+
